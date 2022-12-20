@@ -1,6 +1,6 @@
 % make figure 4 of the manuscript showing
 % (a) intrusion length as a function of slope S for F = 0.25, C = 0.1, and
-% different values of dT
+%     different values of dT
 % (b) regime diagram of critical slope as a function of dT and F
 % (c) regime diagram of critical Fr as a function of dT and S
 %
@@ -13,9 +13,9 @@ addpath('functions/')
 % 
 % setup the figure
 %
-positions = [0.1, 0.78, 0.85, 0.2;
-             0.1, 0.42, 0.85, 0.3;
-             0.1, 0.05, 0.85, 0.3];
+positions = [0.12, 0.78, 0.73, 0.18;
+             0.12, 0.42, 0.73, 0.29;
+             0.12, 0.06, 0.73, 0.29];
 
 fig = figure(1); clf;
 for i = 1:3
@@ -28,7 +28,7 @@ fig.Units = 'pixels'; fig.Position(3:4) = [550, 750];
 
 colmap_b = cmocean('balance');
 colmap_b = colmap_b([1:128, 129:2:256],:); 
-
+ax(1).XLabel.Position(2) = 0.0035;
 %%
 %
 % plot (a)
@@ -63,13 +63,14 @@ set(ax(1), 'YScale', 'log');
 grid(ax(1), 'on')
 ax(1).YLim = yl;
 ax(1).XLim = xl;
-ax(1).FontSize = 14; 
+ax(1).FontSize = 16; 
 ax(1).XLabel.Interpreter = 'latex';
 ax(1).XLabel.String = '$S$';
-ax(1).XLabel.FontSize = 16;
+ax(1).XLabel.FontSize = 18;
 ax(1).YLabel.Interpreter = 'latex';
 ax(1).YLabel.String = '$L$';
-ax(1).YLabel.FontSize = 16;
+ax(1).YLabel.FontSize = 18;
+ax(1).YTick = [0.01, 0.1, 1,10];
 
 % sort out colorbar
 c(1) = colorbar(ax(1));
@@ -77,8 +78,8 @@ colormap(c(1), cmocean('speed'));
 c(1).Ticks = [0,0.5,1];
 c(1).TickLabels = {"10^{-1}", "10^0", "10^1"};
 c(1).Label.Interpreter = 'latex';
-c(1).Label.String = '$\Delta T$';
-c(1).Label.FontSize = 16;
+c(1).Label.String = '$M$';
+c(1).Label.FontSize = 18;
 
 % add the text of pro/retrograde
 txtr = text(ax(1), -9.8, 7, 'prograde', 'interpreter', 'none', 'FontSize', 16, 'color', 'w');
@@ -100,20 +101,21 @@ clim(ax(2),[-10,5])
 c(2) = colorbar(ax(2));
 c(2).Label.Interpreter = 'latex';
 c(2).Label.String = '$S_c$';
-c(2).Label.FontSize = 16;
+c(2).Label.FontSize = 18;
 ax(2).Position(3) = ax(1).Position(3);
 c(2).Position(1) = c(1).Position(1);
 c(2).Label.Position(1) = 2.5; 
 ax(2).XLim = [min(f.F)-1e-3, max(f.F)+ 1e-4];
 ax(2).YLim = [min(f.dT)-1e-4, max(f.dT) + 1e-1]; %slightly adjust x and y lims to make box visible
 %c(2).Ticks = -10:5:10;
-ax(2).FontSize = 14; 
+ax(2).FontSize = 16; 
 ax(2).XLabel.Interpreter = 'latex';
 ax(2).XLabel.String = '$F$';
-ax(2).XLabel.FontSize = 16;
+ax(2).XLabel.FontSize = 18;
 ax(2).YLabel.Interpreter = 'latex';
-ax(2).YLabel.String = '$\Delta T$';
-ax(2).YLabel.FontSize = 16;
+ax(2).YLabel.String = '$M$';
+ax(2).YLabel.FontSize = 18;
+ax(2).XLabel.Position(2) = 0.065;
 
 % add the zero contour -- the line in figure 3
 hold on
@@ -127,20 +129,28 @@ contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
 c(3) = colorbar(ax(3));
 c(3).Label.Interpreter = 'latex';
 c(3).Label.String = '$F_c$';
-c(3).Label.FontSize = 16;
-ax(3).FontSize = 14; 
+c(3).Label.FontSize = 18;
+ax(3).FontSize = 16; 
 ax(3).XLabel.Interpreter = 'latex';
 ax(3).XLabel.String = '$S$';
-ax(3).XLabel.FontSize = 16;
+ax(3).XLabel.FontSize = 18;
 ax(3).YLabel.Interpreter = 'latex';
-ax(3).YLabel.String = '$\Delta T$';
-ax(3).YLabel.FontSize = 16;
+ax(3).YLabel.String = '$M$';
+ax(3).YLabel.FontSize = 18;
+ax(3).XLabel.Position(2) = ax(2).XLabel.Position(2);
+ax(3).XLim = [-10.02, 5]; %make box visibile
+ax(3).YLim = [0.1, 20.1];
 
 colmap_c = cmocean('matter');
 colormap(ax(3), colmap_c(20:end,:));
 clim([0, 0.9])
-plot([0,0], [0.1, 10], 'w--', 'linewidth', 1.5)
+plot([0,0], [0.1, 22], 'k--', 'linewidth', 1.5)
 
+%% add a couple of contours corresponding to ice sheets
+levs = [0.18,0.58];
+for i = 1:2
+    contour(ax(3), f.S, f.dT, f.critical_F', [levs(i), levs(i)] , 'linewidth', 1.5, 'linestyle', '--', 'linecolor', 0.75*[1,1,1]);
+end
 %% add the ice shelf data
 folder  = 'data-for-figures/shelves/';
 shelves              = ["Amery", "Filchner", "Getz", "Larsen", "PIGfast", "PopeSmithKohler", "Ronne", "Ross", "Thwaites"];
@@ -182,7 +192,7 @@ L = 335000;
 cc = 3974;
 St = 5.9e-4;
 Cd = 1e-2;
-uinf = 0.01; % 1 cm/s
+uinf = 0.02; % 2 cm/s
 secs_per_year = 365*24*60^2; %ice velocities are in m/a
 dT = mean_tf_max / (L/cc)  * St / Cd * uinf ./ mean_velocs * secs_per_year;
 S = tan(mean_slope)/Cd;
@@ -199,4 +209,10 @@ ax(3).Position(3) = ax(1).Position(3);
 c(3).Position(1) = c(1).Position(1);
 c(3).Ticks = 0:0.2:0.8;
 xlim([-10,5])
+for i = 1:3
+    c(i).Position(1) = 0.86;
+    ax(i).Position = positions(i,:); %make sure nothing has been upset
+end
+ax(1).XLabel.Position(1) = -2.5;
+ax(3).XLabel.Position(1) = -2.5;
 

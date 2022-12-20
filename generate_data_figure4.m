@@ -114,9 +114,9 @@ end
 
 %% Part c: critical Fr as a function of dT and S
 if gendata_partC
-    N  = 30;     %number of output points
-    S  = -10:10;
-    dT = 10.^linspace(-1,1,N);
+    N  = 50;     %number of output points
+    S  = -10:0.25:5;
+    dT = 10.^linspace(-1,1.4,N);
     C  = 0.1;
 
     nruns = length(dT)*length(S);

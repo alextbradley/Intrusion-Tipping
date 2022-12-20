@@ -1,4 +1,4 @@
-function Fc = get_criticalF(dT,C,S)
+function [Fc,ss] = get_criticalF(dT,C,S)
 % Determine the critical F for continuous intrusion as a function of the
 % dimensionless temperature difference dT, far field Froude number S, and
 % dimensionless drag coefficient C
@@ -47,17 +47,21 @@ if  x(end)  < xbig %we don't have cts intrusion, so this return
     Fc = lb; 
     return
 end
-lb
+lb;
 
 %
 % perform the bisection
 %
+ss = struct;
 niter = 1;   %seed 
 while (abs(ub - lb) > tol && (niter < nitermax))
-    F_guess = (ub + lb)/2
+    F_guess = (ub + lb)/2;
 
     %solve equations with this value of dT
-    [x,~] = get_steady_problem_solution(dT, F_guess, C, S, xeps, xbig);
+    [x,y] = get_steady_problem_solution(dT, F_guess, C, S, xeps, xbig);
+    ss(niter).x = x;
+    ss(niter).y = y;
+    ss(niter).F = F_guess;
 
     %update guess
     if  x(end)  == xbig %continuous intrusion, so we have a new lower bound

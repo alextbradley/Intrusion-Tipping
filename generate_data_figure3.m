@@ -61,7 +61,7 @@ dTc = nan(length(CC), length(FF));
 count = 1;
 for iF = 1:length(FF)
     for iC = 1:length(CC)
-        dTc(iC,iF) = get_critical_deltaT(S,CC(iC),FF(iF));
+        dTc(iC,iF) = get_critical_M(S,CC(iC),FF(iF));
         if mod(count, 100) == 0
             disp(['completed ', num2str(count), ' of ', num2str(numel(dTc)), ' solves'])
         end

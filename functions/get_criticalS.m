@@ -1,4 +1,4 @@
-function Sc = get_criticalS(dT,C,F)
+function [Sc,ss] = get_criticalS(dT,C,F)
 % Determine the critical S for continuous intrusion as a function of the
 % dimensionless temperature difference dT, far field Froude number F, and
 % dimensionless drag coefficient C
@@ -6,10 +6,10 @@ function Sc = get_criticalS(dT,C,F)
 %
 % parameters
 %
-nitermax = 20; %maximum number of iterations
-tol = 1e-3;    %solution tolerance
+nitermax = 30; %maximum number of iterations
+tol = 1e-5;    %solution tolerance
 xeps = 1e-3; %initial condition location
-xbig = 1e3;  %domain length
+xbig = 1e5;  %domain length
 
 %
 % initial guesses
@@ -21,10 +21,10 @@ ub = 0;
 % check that lb and ub are actually upper bounds
 %
 is_ub = 0;
+ss = struct;
 while ~(is_ub)
     %get the solution to steady problem
     [x,~] = get_steady_problem_solution(dT, F, C, ub, xeps, xbig);
-
     if  x(end)  == xbig %we do have cts intrusion, so this is a legit upper bound
         is_ub = 1;
     else
@@ -55,8 +55,14 @@ niter = 1;   %seed
 while (abs(ub - lb) > tol && (niter < nitermax))
     S_guess = (ub + lb)/2;
 
+
     %solve equations with this value of dT
-    [x,~] = get_steady_problem_solution(dT, F, C, S_guess, xeps, xbig);
+    [x,y] = get_steady_problem_solution(dT, F, C, S_guess, xeps, xbig);
+
+
+    ss(niter).x = x;
+    ss(niter).y = y;
+    ss(niter).S = S_guess;
 
     %update guess
     if  x(end)  == xbig %continuous intrusion, so we have a new upper bound

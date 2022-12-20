@@ -3,3 +3,14 @@ real-world/Antarctica-data.mat
 real-world/ANT_G0240_0000.nc
 real-world/bb0448974g_3_1.h5
 real-world/BedMachineAntarctica-v3.nc
+
+data/Antarctica-data.mat
+data/ANT_G0240_0000.nc
+data/bb0448974g_3_1.h5
+data/BedMachineAntarctica-v3.nc
+data-for-figures/all-Ant-data.mat
+
+*.png
+*.html
+*documentation.m
+*.jpg

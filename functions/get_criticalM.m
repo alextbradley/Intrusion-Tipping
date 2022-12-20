@@ -1,6 +1,7 @@
-function dTc = get_critical_deltaT(S,C,F)
-% Determine the critical \Delta T for continuous intrusion as a function of
-% the slope S, far field Froude number F, and dimensionless drag coefficient C
+function [Mc,ss] = get_criticalM(S,C,F)
+% Determine the critical M for continuous intrusion as a function of
+% the slope S, far field Froude number F, and dimensionless drag
+% coefficient C. Returns each of the solutions in the structrue ss. 
 
 %
 % parameters
@@ -49,21 +50,25 @@ end
 %
 % perform the bisection
 %
+ss = struct; 
 while (abs(ub - lb) > tol && (niter < nitermax))
-    dT_guess = (ub + lb)/2;
+    M_guess = (ub + lb)/2;
 
     %solve equations with this value of dT
-    [x,~] = get_steady_problem_solution(dT_guess, F, C, S, xeps, xbig);
-
+    [x,y] = get_steady_problem_solution(M_guess, F, C, S, xeps, xbig);
+    ss(niter).x = x;
+    ss(niter).y = y;
+    ss(niter).M = M_guess; 
+    
     %update guess
     if  x(end)  == xbig %continuous intrusion, so we have a new upper bound
-        ub = dT_guess;
+        ub = M_guess;
     else %finite intrusion, so new lower bound
-        lb = dT_guess;
+        lb = M_guess;
     end
     niter = niter + 1;
 
 end
-dTc = dT_guess;
+Mc = M_guess;
 end
 

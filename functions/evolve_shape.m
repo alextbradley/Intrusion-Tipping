@@ -73,7 +73,7 @@ for i = 1:n_timesteps+1
         odefun  = @(x,h1) two_layer_RHS(x,h1,C,S, Fr_infty, h_spline, dhdx_spline);
         options = odeset('RelTol', 1e-3,...
                          'AbsTol', 1e-4,...
-                        'Events', @(x,h1) EvFnc(x,h1, h_spline));
+                        'Events', @(x,h1) evolve_shape_event_function(x,h1, h_spline));
         BC     = (Fr_infty*(1 + 1e-4))^(2/3) ;            %boundary condition: h1 at entry corresponds to Fr = 1
         sol    = ode15s(odefun, [0,min(x)], BC, options); %solve equations
        

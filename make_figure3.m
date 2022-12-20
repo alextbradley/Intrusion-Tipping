@@ -4,6 +4,7 @@
 %
 % 22/11/22 ATB, MIT license.
 clear
+addpath('functions')
 %
 % load the data
 % 
@@ -30,7 +31,7 @@ set(cc,'Ticks',log10(clabels),'TickLabels', clabstring);
 cmap = cmocean('tempo');
 colormap(cmap(20:end,:)); %remove final white shades
 cc.Label.String = 'dimensionless intrusion length';
-cc.Label.FontSize = 14; 
+cc.FontSize = 15;
 
 
 %
@@ -47,10 +48,12 @@ end
 % add text labels
 %
 txt1 = text(0.11,8.5, 'unbounded intrusion', 'FontSize', 16, 'FontName', 'Helvetica', 'Interpreter', 'none');
-txt2 = text(0.623,0.12, 'bounded intrusion', 'FontSize', 16, 'FontName', 'Helvetica', 'Interpreter', 'none');
-txt3 = text(0.57, 5.5, '$C = 0.01$', 'Interpreter', 'Latex', 'Rotation', 44, 'Color', colmap(3,:));
-txt4 = text(0.72, 5.85, '$C = 0.1$', 'Interpreter', 'Latex', 'Rotation', 48, 'Color', colmap(2,:));
-txt5 = text(0.84, 6.2, '$C = 1$', 'Interpreter', 'Latex', 'Rotation', 55, 'Color', colmap(1,:));
+txt2 = text(0.63,0.12, 'bounded intrusion', 'FontSize', 16, 'FontName', 'Helvetica', 'Interpreter', 'none');
+txt3 = text(0.565, 5.1, '$C = 0.01$', 'Interpreter', 'Latex', 'Rotation', 45, 'Color', colmap(3,:), 'FontSize', 16);
+txt4 = text(0.7, 5.3, '$C = 0.1$', 'Interpreter', 'Latex', 'Rotation', 48, 'Color', colmap(2,:), 'FontSize', 16);
+txt5 = text(0.84, 5.9, '$C = 1$', 'Interpreter', 'Latex', 'Rotation', 55, 'Color', colmap(1,:), 'FontSize', 16);
+
+
 
 
 %
@@ -60,7 +63,8 @@ set(gca, 'YScale', 'log')
 ylim(yl)
 xlim(xl)
 xlabel('$F$', 'FontSize', 16, 'Interpreter','latex')
-ylabel('$\Delta T$', 'FontSize', 16, 'Interpreter','latex')
+ylabel('$M$', 'FontSize', 16, 'Interpreter','latex')
 ax = gca; ax.XTick = 0.1:0.2:0.9;
+ax.FontSize = 16;
 fig = gcf;
 fig.Position(3:4) = [560,420];
