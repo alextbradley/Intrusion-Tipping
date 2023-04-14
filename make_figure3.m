@@ -22,14 +22,17 @@ fill([xl, flip(xl)], [yl(1), yl(1), yl(end), yl(end)], bgc , 'FaceAlpha', 0.2)
 %
 % add map where finite intrusion exists
 %
-contourf(f.F, f.dT, log10(f.intrusion_length), 30, 'linestyle', 'none');
+%contourf(f.F, f.dT, log10(f.intrusion_length), 30, 'linestyle', 'none');
+p = imagesc(f.F, f.dT, log10(f.intrusion_length));
+set(p, 'AlphaData',~isnan(f.intrusion_length));
+ax = gca; set(ax, 'YDir', 'normal');
 cc = colorbar; 
 clabels = 10.^(-3:1:1);  
 clabstring  =  ["10^{-3}", "10^{-2}", "10^{-1}", "10^{0}", "10^{1}"];
 caxis(log10(clabels([1 end]))); 
 set(cc,'Ticks',log10(clabels),'TickLabels', clabstring); 
-cmap = cmocean('tempo');
-colormap(cmap(20:end,:)); %remove final white shades
+cmap = cmocean('tempo'); colormap(cmap(20:end,:)); %remove final white shades
+%cmap = cmocean('ice'); colormap(cmap(50:end-20,:)); %remove final white shades
 cc.Label.String = 'dimensionless intrusion length';
 cc.FontSize = 15;
 
@@ -47,8 +50,8 @@ end
 %
 % add text labels
 %
-txt1 = text(0.11,8.5, 'unbounded intrusion', 'FontSize', 16, 'FontName', 'Helvetica', 'Interpreter', 'none');
-txt2 = text(0.63,0.12, 'bounded intrusion', 'FontSize', 16, 'FontName', 'Helvetica', 'Interpreter', 'none');
+txt1 = text(0.11,8.5, 'unbounded intrusion', 'FontSize', 18, 'FontName', 'Helvetica', 'Interpreter', 'none');
+txt2 = text(0.59,0.12, 'bounded intrusion', 'FontSize', 18, 'FontName', 'Helvetica', 'Interpreter', 'none');
 txt3 = text(0.565, 5.1, '$C = 0.01$', 'Interpreter', 'Latex', 'Rotation', 45, 'Color', colmap(3,:), 'FontSize', 16);
 txt4 = text(0.7, 5.3, '$C = 0.1$', 'Interpreter', 'Latex', 'Rotation', 48, 'Color', colmap(2,:), 'FontSize', 16);
 txt5 = text(0.84, 5.9, '$C = 1$', 'Interpreter', 'Latex', 'Rotation', 55, 'Color', colmap(1,:), 'FontSize', 16);
@@ -65,6 +68,8 @@ xlim(xl)
 xlabel('$F$', 'FontSize', 16, 'Interpreter','latex')
 ylabel('$M$', 'FontSize', 16, 'Interpreter','latex')
 ax = gca; ax.XTick = 0.1:0.2:0.9;
-ax.FontSize = 16;
+ax.FontSize = 18;
 fig = gcf;
 fig.Position(3:4) = [560,420];
+cc.FontSize = 18;
+

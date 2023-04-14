@@ -9,13 +9,15 @@
 % 
 clear
 addpath('functions/')
+set(0,'DefaultTextInterpreter','none')
+
 
 % 
 % setup the figure
 %
-positions = [0.12, 0.78, 0.73, 0.18;
-             0.12, 0.42, 0.73, 0.29;
-             0.12, 0.06, 0.73, 0.29];
+positions = [0.12, 0.78, 0.73, 0.2;
+             0.12, 0.51, 0.73, 0.2;
+             0.12, 0.08, 0.73, 0.35];
 
 fig = figure(1); clf;
 for i = 1:3
@@ -41,10 +43,7 @@ f = load("data-for-figures/figure4a_data.mat");
 %
 yl = [1e-2, 10]; %plot y lims
 xl = [min(f.S), 5];
-
-fill(ax(1),[min(f.S), 0, 0, min(f.S)]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(40,:), 'LineStyle', 'none') 
-fill(ax(1),[0,xl(2), xl(2),0]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(end-20,:), 'LineStyle', 'none') 
-plot(ax(1),[0,0], yl, 'k--', 'linewidth', 1.5)
+xl = [-7,3];
 
 %
 colmap_a = flip(cmocean('speed', length(f.dT)+2));
@@ -54,8 +53,8 @@ for i = 1:(length(f.dT)-1)
     idx = find(isnan(f.intrusion_length(i,:)), 1,'first') - 1; %find last non nan entry
     plot(ax(1), f.S(idx), f.intrusion_length(i,idx), 'ko', 'MarkerFaceColor', cmap(i+1,:)); %plot final point as circle - critical slope
 
-    % plot dashed line down to 0
-    plot(ax(1), [f.S(idx) , f.S(idx)], [1e-4, f.intrusion_length(i,idx)], '--','Color',cmap(i+1,:), 'LineWidth', 1.25 )
+    % plot dashed line upwards
+    plot(ax(1), [f.S(idx) , f.S(idx)], [f.intrusion_length(i,idx), 10], '--','Color',cmap(i+1,:), 'LineWidth', 1.25 )
 end
 
 
@@ -82,7 +81,10 @@ c(1).Label.String = '$M$';
 c(1).Label.FontSize = 18;
 
 % add the text of pro/retrograde
-txtr = text(ax(1), -9.8, 7, 'prograde', 'interpreter', 'none', 'FontSize', 16, 'color', 'w');
+fill(ax(1),[min(f.S), 0, 0, min(f.S)]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(40,:), 'LineStyle', 'none') 
+fill(ax(1),[0,xl(2), xl(2),0]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(end-20,:), 'LineStyle', 'none') 
+plot(ax(1),[0,0], yl, 'k--', 'linewidth', 1.5)
+txtr = text(ax(1), -6.8, 7, 'prograde', 'interpreter', 'none', 'FontSize', 16, 'color', 'w');
 txtb = text(ax(1), .5, 7, 'retrograde', 'interpreter', 'none', 'FontSize', 16,'color', 'w');
 
 shg
@@ -91,41 +93,90 @@ shg
 %
 % plot b
 %
-f = load("data-for-figures/figure4b_data.mat");
-cc = f.critical_slope;
-cc(cc<-10) = -10;
-contourf(ax(2), f.F, f.dT, cc, 100, 'linestyle', 'none');
-colormap(ax(2), colmap_b);
-set(ax(2), 'YScale', 'log'); 
-clim(ax(2),[-10,5])
-c(2) = colorbar(ax(2));
-c(2).Label.Interpreter = 'latex';
-c(2).Label.String = '$S_c$';
-c(2).Label.FontSize = 18;
-ax(2).Position(3) = ax(1).Position(3);
-c(2).Position(1) = c(1).Position(1);
-c(2).Label.Position(1) = 2.5; 
-ax(2).XLim = [min(f.F)-1e-3, max(f.F)+ 1e-4];
-ax(2).YLim = [min(f.dT)-1e-4, max(f.dT) + 1e-1]; %slightly adjust x and y lims to make box visible
-%c(2).Ticks = -10:5:10;
-ax(2).FontSize = 16; 
+% add the red and blue boxes
+fill(ax(2),[8.2, 8.2, yl(2), yl(2)],[-10, 0, 0, -10]*1.1,colmap_b(40,:), 'LineStyle', 'none') 
+fill(ax(2),[8.2, 8.2, yl(2), yl(2)],[0,3, 3,0]*1.1 , colmap_b(end-20,:), 'LineStyle', 'none') 
+
+g = load("data-for-figures/figure4b_data.mat");
+
+
+idxF = round(linspace(1,30,5)); %indices corresponding to F = 0.1, 0.3, 0.5, 0.7, 0.9 (roughly)
+cmapbname = 'dense';
+colmap_b2 = cmocean('dense', 100);
+colmap_b2 = colmap_b2(20:end-20,:);
+colmapblines= colmap_b2(round(linspace(1,length(colmap_b2),5)),:);
+plot(ax(2), [0.01,10], [0,0],'k--','linewidth', 1.25)
+for iF = 1:5
+    ii = idxF(iF);
+    plot(ax(2), g.dT, g.critical_slope(ii,:), 'linewidth',1.5, 'color', colmapblines(iF,:));
+end
+
+%add the data from previous figure
+idxF = 6;
+for i = 1:(length(f.dT)-1)
+    idx = find(isnan(f.intrusion_length(i,:)), 1,'first') - 1; %find last non nan entry
+    plot(ax(2), f.dT(i), f.S(idx), 'ko', 'MarkerFaceColor', cmap(i+1,:)); %plot final point as circle - critical slope
+
+end
+
 ax(2).XLabel.Interpreter = 'latex';
-ax(2).XLabel.String = '$F$';
+ax(2).XLabel.String = '$M$';
 ax(2).XLabel.FontSize = 18;
 ax(2).YLabel.Interpreter = 'latex';
-ax(2).YLabel.String = '$M$';
+ax(2).YLabel.String = '$S_c$';
 ax(2).YLabel.FontSize = 18;
-ax(2).XLabel.Position(2) = 0.065;
+%ax(2).XLabel.Position(2) = 0.065;
+set(ax(2), 'XScale', 'log'); 
+ax(2).YLim = [-3,3];
+ax(2).XLim = [1e-1,10];
+c(2) = colorbar(ax(2));
+c(2).Label.Interpreter = 'latex';
+c(2).Label.String = '$F$';
+c(2).Label.FontSize = 18;
+c(2).Limits = [min(g.F), max(g.F)];
+c(2).Ticks = 0.1:0.2:0.9;
+ax(2).FontSize = 16; 
+colormap(c(2), colmap_b2);
 
-% add the zero contour -- the line in figure 3
-hold on
-contour(ax(2), f.F, f.dT, f.critical_slope, [0,0], 'k', 'linewidth',1.25);
+
+
+% contourf(ax(2), f.F, f.dT, cc, 100, 'linestyle', 'none');
+% colormap(ax(2), colmap_b);
+% set(ax(2), 'YScale', 'log'); 
+% clim(ax(2),xl)
+% c(2) = colorbar(ax(2));
+% c(2).Label.Interpreter = 'latex';
+% c(2).Label.String = '$S_c$';
+% c(2).Label.FontSize = 18;
+% ax(2).Position(3) = ax(1).Position(3);
+% c(2).Position(1) = c(1).Position(1);
+% c(2).Label.Position(1) = 2.5; 
+% ax(2).XLim = [min(f.F)-1e-3, max(f.F)+ 1e-4];
+% ax(2).YLim = [min(f.dT)-1e-4, max(f.dT) + 1e-1]; %slightly adjust x and y lims to make box visible
+% %c(2).Ticks = -10:5:10;
+% ax(2).FontSize = 16; 
+% ax(2).XLabel.Interpreter = 'latex';
+% ax(2).XLabel.String = '$F$';
+% ax(2).XLabel.FontSize = 18;
+% ax(2).YLabel.Interpreter = 'latex';
+% ax(2).YLabel.String = '$M$';
+% ax(2).YLabel.FontSize = 18;
+% ax(2).XLabel.Position(2) = 0.065;
+% 
+% % add the zero contour -- the line in figure 3
+% hold on
+% contour(ax(2), f.F, f.dT, f.critical_slope, [0,0], 'k', 'linewidth',1.25);
+% 
+% 
+
+
 
 %%
 % 
 % plot c
 f = load("data-for-figures/figure4c_data.mat");
-contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
+%contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
+imagesc(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
 c(3) = colorbar(ax(3));
 c(3).Label.Interpreter = 'latex';
 c(3).Label.String = '$F_c$';
@@ -137,8 +188,8 @@ ax(3).XLabel.FontSize = 18;
 ax(3).YLabel.Interpreter = 'latex';
 ax(3).YLabel.String = '$M$';
 ax(3).YLabel.FontSize = 18;
-ax(3).XLabel.Position(2) = ax(2).XLabel.Position(2);
-ax(3).XLim = [-10.02, 5]; %make box visibile
+%ax(3).XLabel.Position(2) = ax(2).XLabel.Position(2);
+ax(3).XLim = [xl(1)-0.02, xl(2)]; %make box visibile
 ax(3).YLim = [0.1, 20.1];
 
 colmap_c = cmocean('matter');
@@ -208,7 +259,7 @@ set(ax(3), 'YScale', 'log')
 ax(3).Position(3) = ax(1).Position(3);
 c(3).Position(1) = c(1).Position(1);
 c(3).Ticks = 0:0.2:0.8;
-xlim([-10,5])
+xlim(xl)
 for i = 1:3
     c(i).Position(1) = 0.86;
     ax(i).Position = positions(i,:); %make sure nothing has been upset

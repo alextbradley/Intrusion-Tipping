@@ -56,9 +56,18 @@ ns = 30; %number shift in colormap
 alexred = [178,34,34]/255;
 for iP = 1:2
 
-    tidx = 1:3:length(sol(iP).t);
+    tidx = 1:12:length(sol(iP).t);
+    if iP == 1
     A = cmocean('ice', (length(sol(iP).t)+ns));
+    A = flipud(A);
+
+    else
+    A = cmocean('solar', (length(sol(iP).t)+ns));
+    A = flipud(A);
+    end
     A = A(1:length(sol(iP).t),:);
+
+
     %A   = fakeparula(length(sol(iP).t));
     %
     %first row: evolution of channel shape
@@ -67,7 +76,7 @@ for iP = 1:2
 
     for i = tidx
         plot(ax(1,iP),-sol(iP).x,sol(iP).h(i, :), 'linewidth', 1, 'color', A(i,:))
-        plot(ax(1,iP),-sol(iP).x,sol(iP).h(i,:)-sol(iP).h1(i,:),'--', 'linewidth', 1, 'color', A(i,:));
+        %plot(ax(1,iP),-sol(iP).x,sol(iP).h(i,:)-sol(iP).h1(i,:),'--', 'linewidth', 1, 'color', A(i,:));
 
         %also work out the intrusion distance (where h - h1 = 0 first)
         idx = find(sol(iP).h(i,:)-sol(iP).h1(i,:) == 0, 1, 'First');
@@ -155,7 +164,7 @@ for iP = 1:2
         plot(ax(3,iP), -sol(iP).x,sol(iP).u1(i, :), 'linewidth', 1, 'color', A(i,:))
     end
     ax(3,iP).YLabel.String = '$u^*$';
-    ax(3,iP).XLabel.String = 'dimensionless channel position';
+    ax(3,iP).XLabel.String = 'dimensionless along GZ position';
     ax(3,iP).XLabel.Interpreter = 'none';
     ax(3,iP).XLabel. FontName = 'Helvetica';
     ax(3,iP).YLim = [1,2.5];
