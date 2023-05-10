@@ -140,26 +140,11 @@ shg
 
 f = load("data-for-figures/figure4c_data.mat");
 
-dT_idx = round(linspace(1,length(f.dT)-9,7));
+%%
+dT_idx = round(linspace(1,length(f.dT)-8,5));
 dTs = f.dT;
 dTs = dTs(dT_idx); %dT values to plot
-Ms = 1./dTs;
-Fc = f.critical_F;
-cmap = flip(colmap_a);
-for iM = 1:length(Ms)
-    plot(ax(2),f.S, Fc(:,dT_idx(iM)), 'color', cmap(iM+1,:), 'LineWidth', 1.25);
-end
-   
-ax(2).XLabel.Interpreter = 'latex';
-ax(2).XLabel.String = '$S$';
-ax(2).XLabel.FontSize = 18;
-ax(2).YLabel.Interpreter = 'latex';
-ax(2).YLabel.String = '$F_c$';
-ax(2).YLabel.FontSize = 18;
-ax(2).FontSize = 16; 
-ax(2).XLim = [xl(1)-0.02, xl(2)]; %make box visibile
-grid(ax(2), 'on')
-ax(2).YTick = 0:0.2:1;
+Ms = 1./dTs
 
 %%
 % 
@@ -250,11 +235,10 @@ ax(3).Position(3) = ax(1).Position(3);
 c(3).Position(1) = c(1).Position(1);
 c(3).Ticks = 0:0.2:0.8;
 xlim(xl)
-for i = [1,3]
+for i = 1:3
     c(i).Position(1) = 0.86;
     ax(i).Position = positions(i,:); %make sure nothing has been upset
 end
 ax(1).XLabel.Position(1) = -2.5;
 ax(3).XLabel.Position(1) = -2.5;
-ax(2).XLabel.Position(1) = -2.5;
 
