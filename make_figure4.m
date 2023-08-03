@@ -184,11 +184,11 @@ ax(3).YLim = [0.1, 20.1];
 
 colmap_c = cmocean('matter');
 colormap(ax(3), colmap_c(20:end,:));
-clim([0, 0.9])
+caxis([0, 0.9])
 plot([0,0], [0.1, 22], 'k--', 'linewidth', 1.5)
 
 %% add a couple of contours corresponding to ice sheets
-levs = [0.18,0.58];
+levs = [0.3,0.7];
 for i = 1:2
     contour(ax(3), f.S, f.dT, f.critical_F', [levs(i), levs(i)] , 'linewidth', 1.5, 'linestyle', '--', 'linecolor', 0.75*[1,1,1]);
 end
@@ -200,11 +200,25 @@ horizontal_alignment = ["right", "left", "left","left","left","left","right","ri
 xshift               = [-0.25,-0.5, 0.25, 0.25,0.15, 0.25,-.25, 0.25,0];
 yshift               = [0    ,0.20, 0   ,  0  , 0   ,  0,  0,     0.5,-0.1 ];
 
+% constants
+L = 335000; 
+cc = 3974;
+St = 5.9e-4;
+Cd = 1e-2; %1e-2
+uinf = 0.01; % 2 cm/s 0.02
+secs_per_year = 365*24*60^2; %ice velocities are in m/a
+
 %setup storage
 sz = size(shelves);
 mean_tf_max = nan(sz);
 mean_slope  = nan(sz);
 mean_velocs = nan(sz);
+std_tf_max = nan(sz);
+std_slope  = nan(sz);
+std_velocs = nan(sz);
+
+%alternative method: work out S and M for all points, then take the mean
+clear S_all M_all
 
 %get mean data
 for i = 1:length(shelves)
@@ -214,34 +228,56 @@ for i = 1:length(shelves)
     %thermal forcing
     tf_max = f_shelf.tf_shelf;
     tf_max = tf_max(~isnan(tf_max));
-    mean_tf_max(i) = mean(tf_max);
+    mean_tf_max(i) = median(tf_max);
+    std_tf_max(i)  = std(tf_max);
 
     %slope
     slope = f_shelf.slope;
     slope = slope(~isnan(slope));
-    mean_slope(i)= mean(slope);
+    mean_slope(i)= median(slope); 
+    std_slope(i) = std(slope);
+    uq_slope(i) = quantile(slope, [0.7]);
+    lq_slope(i) = quantile(slope, [0.3]);
+    
 
     %velocity
     velocs = f_shelf.velocs;
     velocs = velocs(~isnan(velocs));
     mean_velocs(i)= mean(velocs);
+    mean_velocs(i)= median(velocs);
+    invmean_velocs(i) = mean(1./velocs);
+    std_velocs(i) = std(velocs);
+    uq_velocs(i) = quantile(velocs, [0.7]);
+    lq_velocs(i) = quantile(velocs, [0.3]);
 
+    
+    %compute all values of S and M
+    S_all = tan(slope)/Cd;
+    M_all = mean_tf_max(i) / (L/cc)  * St / Cd * uinf ./ velocs * secs_per_year;
+    
+%      dT(i) = mean(M_all);
+%      S(i) = mean(S_all);
 end
 
 % compute dimensionless quantities
-L = 335000; 
-cc = 3974;
-St = 5.9e-4;
-Cd = 1e-2;
-uinf = 0.02; % 2 cm/s
-secs_per_year = 365*24*60^2; %ice velocities are in m/a
-dT = mean_tf_max / (L/cc)  * St / Cd * uinf ./ mean_velocs * secs_per_year;
-S = tan(mean_slope)/Cd;
+dT     = mean_tf_max / (L/cc)  * St / Cd * uinf ./ mean_velocs * secs_per_year;
+dT_min = mean_tf_max / (L/cc)  * St / Cd * uinf ./ (uq_velocs) * secs_per_year;
+dT_max = mean_tf_max / (L/cc)  * St / Cd * uinf ./ (lq_velocs) * secs_per_year;
+
+S     = tan(mean_slope)/Cd;
+S_min = tan(lq_slope)/Cd;
+S_max = tan(uq_slope)/Cd;
+
 
 %add points
 for i = 1:max(sz)
     plot(ax(3), S(i), dT(i), 'ko', 'markerfacecolor', 'k',  'markeredgecolor', 'k', 'MarkerSize', 5)
+    plot(ax(3), [S(i),S(i)], [dT_min(i), dT_max(i)], 'k', 'LineWidth', 0.5)
+    
+   plot(ax(3), [S_min(i),S_max(i)], [dT(i), dT(i)], 'k', 'LineWidth', 0.5)
     t(i) = text(S(i)+ xshift(i), dT(i)+yshift(i), names(i),'FontSize', 16, 'HorizontalAlignment',horizontal_alignment(i));%, 'VerticalAlignment', 'bottom');
+   % drawnow
+   % pause
 end
 
 % final tidying
