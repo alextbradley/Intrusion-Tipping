@@ -17,7 +17,7 @@ for iF = 1:length(fnames)
     histogram(fshelf.tf_shelf(idx),'Normalization',  'probability', 'FaceColor', [0, 33, 204]/256)
     hold on
     mean(fshelf.tf_shelf(idx))
-    plot( mean(fshelf.tf_shelf(idx))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
+    plot( median(fshelf.tf_shelf(idx))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
     title(titles(iF), 'FontName', 'Arial');
     xlim([0,4])
     ylim([0,0.4])

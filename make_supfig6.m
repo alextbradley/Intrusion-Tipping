@@ -17,10 +17,10 @@ for iF = 1:length(fnames)
     histogram(log10(fshelf.velocs(idx)),'Normalization',  'probability', 'FaceColor', [0, 33, 204]/256)
     hold on
     %mean(fshelf.velocs(idx))
-    plot( log10(mean(fshelf.velocs(idx)))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
+    plot( log10(median(fshelf.velocs(idx)))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
     title(titles(iF), 'FontName', 'Arial');
     xlim(log10([10,5000]))
-    ylim([0,0.5])
+    ylim([0,0.4])
     %set(gca, 'XScale', 'log')
     xlabel('velocity (m/yr)')
     ylabel('density')
