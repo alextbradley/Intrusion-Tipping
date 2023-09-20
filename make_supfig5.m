@@ -1,5 +1,5 @@
-% Make supplementary figure 5, showing histograms of the grounding line
-% slope. 
+% Make supplementary figure 5, showing histograms of thermal forcing for
+% the selected ice shelves
 
 %% Preliminaries
 %clear
@@ -13,15 +13,15 @@ for iF = 1:length(fnames)
     fshelf = load(strcat('./data-for-figures/shelves/', fnames(iF), '.mat'));
 
     subplot(3,3,iF);
-    idx = ~isnan(fshelf.slope);
-    histogram(fshelf.slope(idx),'Normalization',  'probability', 'FaceColor', [0, 33, 204]/256)
+    idx = ~isnan(fshelf.tf_shelf);
+    histogram(fshelf.tf_shelf(idx),'Normalization',  'probability', 'FaceColor', [0, 33, 204]/256)
     hold on
-    mean(fshelf.slope(idx))
-    plot( mean(fshelf.slope(idx))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
+    mean(fshelf.tf_shelf(idx))
+    plot( mean(fshelf.tf_shelf(idx))*[1,1],[0,1], 'k--', 'linewidth', 1.25)
     title(titles(iF), 'FontName', 'Arial');
-    xlim([-0.2, 0.2])
+    xlim([0,4])
     ylim([0,0.4])
-    xlabel('bed slope')
+    xlabel('thermal forcing (C)')
     ylabel('density')
     ax = gca;
     ax.FontSize = 12;

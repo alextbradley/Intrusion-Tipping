@@ -167,6 +167,7 @@ ax(2).YTick = 0:0.2:1;
 f = load("data-for-figures/figure4c_data.mat");
 %contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
 imagesc(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
+%pcolor(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
 c(3) = colorbar(ax(3));
 c(3).Label.Interpreter = 'latex';
 c(3).Label.String = '$F_c$';
@@ -205,7 +206,7 @@ L = 335000;
 cc = 3974;
 St = 5.9e-4;
 Cd = 1e-2; %1e-2
-uinf = 0.01; % 2 cm/s 0.02
+uinf = 0.01; % 1 cm/s 0.01
 secs_per_year = 365*24*60^2; %ice velocities are in m/a
 
 %setup storage

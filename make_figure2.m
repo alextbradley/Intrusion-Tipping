@@ -245,14 +245,14 @@ end
 % velocity
 for iP = 1:2
     gprimed = 0.27;
-    veloc_scale = sol(iP).pp.F*sqrt(gprimed*zscale);
+    veloc_scale = sol(iP).pp.F*sqrt(gprimed*(zscale*1e-2)); %factor of 1e-2 because z scale is given in cm (so veloc scale here is in m/s, but we reconvert to cm/s for plotting)
 
     for iT = 1:length(tidx)
         i = tidx(iT);
-        plot(ax(nsnapshots+3,iP), -sol(iP).x*lengthscale,sol(iP).u1(i, :)*veloc_scale, 'linewidth', 1.5, 'color', C(i,:,iP))
+        plot(ax(nsnapshots+3,iP), -sol(iP).x*lengthscale,sol(iP).u1(i, :)*veloc_scale*100, 'linewidth', 1.5, 'color', C(i,:,iP))
         %add the intrusion as pt
         idx = find(sol(iP).h(i,:)-sol(iP).h1(i,:) == 0, 1, 'First');
-        plot(ax(nsnapshots+3,iP), -sol(iP).x(idx)*lengthscale,sol(iP).u1(i, idx)*veloc_scale, 'o', 'MarkerFaceColor', C(i,:,iP), 'MarkerEdgeColor', 'k','LineWidth', 0.5, 'MarkerSize',7)
+        plot(ax(nsnapshots+3,iP), -sol(iP).x(idx)*lengthscale,sol(iP).u1(i, idx)*veloc_scale*100, 'o', 'MarkerFaceColor', C(i,:,iP), 'MarkerEdgeColor', 'k','LineWidth', 0.5, 'MarkerSize',7)
 
 
 
@@ -263,13 +263,13 @@ for iP = 1:2
     % tidy
     ax(nsnapshots+3,iP).XLim = [1,xlims(iP)];
     ax(nsnapshots+3,iP).FontSize = 14;
-    ax(nsnapshots+3,iP).YLim = [0.4,1];
+    ax(nsnapshots+3,iP).YLim = [4,10];
     ax(nsnapshots+3,iP).XTick = xticks(iP,:);
     ax(nsnapshots+3,iP).XTickLabel{1} = '0';
     ax(nsnapshots+3,iP).XLabel.String = 'channel position (m)';
     ax(nsnapshots+3,iP).XLabel.Interpreter = 'none';
     ax(nsnapshots+3,iP).XLabel.FontName = 'Helvetica';
-    ax(nsnapshots+3,iP).YLabel.String = {'velocity';'(m/s)'};
+    ax(nsnapshots+3,iP).YLabel.String = {'velocity';'(cm/s)'};
     ax(nsnapshots+3,iP).YLabel.Interpreter = 'none';
     ax(nsnapshots+3,iP).YLabel.FontName = 'Helvetica';
 
@@ -295,7 +295,7 @@ c1.Position(4) = 0.02;
 
 
 axnew = axes;
-anxew.Position = ax.Position;
+anxew.Position = axn.Position;
 c2 = colorbar;
 colormap(c2, C(:,:,2));
 c2.Ticks = [];
