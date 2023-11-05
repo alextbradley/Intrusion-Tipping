@@ -51,6 +51,8 @@ save('data-for-figures/figure2_data.mat', 'sol');
 toc
 
 %% Get solutions for later T (up to time 1000) for figure 2h
+N  	 = 100;     %number of grid points inside each block
+M 	 = 100; 		%number of blocks (more because longer)
 sol(1).dt      = 1e-3;   
 sol(2).dt      = 1e-3; 
 sol(1).t_end   = 1000;    %end time for solution 1
