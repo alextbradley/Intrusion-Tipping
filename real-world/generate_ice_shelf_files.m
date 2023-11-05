@@ -3,18 +3,20 @@
 % Generate indices and lengthscales for some ice shelves
 
 folder = 'shelves/';
-fname = 'PIGfast'; %name of the ice shelf
+fname = 'Thwaites'; %name of the ice shelf
 fname = strcat(folder, fname);
 %f = load('Antarctica-data.mat');
 %%
 
 figure(1); clf;
-spy(f.isfront, 'b')
+v = sqrt((f.vx).^2 + (f.vy).^2);
+imagesc(v);
+
 hold on 
-spy(f.isgl, 'r')
-%v = sqrt((f.vx).^2 + (f.vy).^2);
+spy(f.isfront, 'b'); drawnow
+spy(f.isgl, 'r'); drawnow;
 %h = imagesc(f.x, f.y, f.mask);
-set(gca, 'YDir', 'normal')
+%set(gca, 'YDir', 'normal')
 axis equal
 title('zoom and click around ice shelf (blue)')
 zoom on;
@@ -55,5 +57,5 @@ set(gca, 'YDir', 'normal')
 bedmap_shelf = (f.mask == 3);
 in = in_shelf & bedmap_shelf; 
 fname = strcat(fname, '.mat');
-save(fname, 'in ')
+save(fname, 'in')
 

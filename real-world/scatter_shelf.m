@@ -1,6 +1,6 @@
 % 
 folder = 'shelves/';
-fname = 'Thwaites'; %name of the ice shelf
+fname = 'PopeSmithKohler'; %name of the ice shelf
 fname = strcat(folder, fname, '.mat');
 in = load(fname, 'in'); %indices of potential shelf points
 in = in.in; 

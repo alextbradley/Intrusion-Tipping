@@ -106,15 +106,15 @@ for i = 1:n_timesteps+1
                 fprintf('solution stored at t = %.3f \n', t_now)
          end
 
-        %% plot the solution
-        if (mod(i-1,n_steps_plot)  == 0) && (t_plot <= t_end)
-                figure(1); clf;
-                plot_config(x, h_now, h1_now,u1_now,Fr_now, melt_now,t_now,dhdt_now,dhdx_now,...
-                           C, S,lambda)
-        %       pause
-                drawnow
-        end
- 
+%         %% plot the solution
+%         if (mod(i-1,n_steps_plot)  == 0) && (t_plot <= t_end)
+%                 figure(1); clf;
+%                 plot_config(x, h_now, h1_now,u1_now,Fr_now, melt_now,t_now,dhdt_now,dhdx_now,...
+%                            C, S,lambda)
+%         %       pause
+%                 drawnow
+%         end
+%  
         %% timestep the channel width
         h_prev = h_now;
         h_now1 = h_prev + dt * dhdt_now;

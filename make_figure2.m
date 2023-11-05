@@ -13,6 +13,8 @@ addpath('functions');
 close(figure(1))
 set(0,'DefaultTextInterpreter','latex','DefaultAxesFontSize',14,'DefaultTextFontSize',14);
 
+timescale = 1; %days
+
 %% Plot prep
 fig = figure(1); clf; fig.Position(3:4) = [1100,800];
 fs = 16; %axis label fontsize
@@ -149,7 +151,6 @@ end
 %
 
 % compute the intrusion distance
-timescale = 1; %days
 ylimst = xlims; %use from previous
 for iP = 1:2
     for iT = 1:2:length(sol(iP).t)
@@ -238,10 +239,6 @@ for iP = 1:2
 
 end
 
-
-
-
-
 % velocity
 for iP = 1:2
     gprimed = 0.27;
@@ -293,7 +290,6 @@ axn = gca;
 axn.Visible = 'off';
 c1.Position(4) = 0.02;
 
-
 axnew = axes;
 anxew.Position = axn.Position;
 c2 = colorbar;
@@ -303,3 +299,41 @@ c2.Location = 'north';
 axnew.Visible = 'off';
 c2.Position(4) = 0.02;
 c2.Position(2) = c1.Position(2)+ 0.02;
+
+%% Make panel i showing the intrusion distance at late time
+data_longtime = load('data-for-figures/figure2_data_longtime.mat');
+sol_longtime = data_longtime.sol;
+figure(3); clf;  hold on;
+
+intrusion_lengths = nan(2, length(sol_longtime(iP).t));
+times = nan(2, length(sol_longtime(iP).t));
+for iP = 1:2
+    for iT = 1:length(sol_longtime(iP).t)
+
+        idx = find(sol_longtime(iP).h(iT,:)-sol_longtime(iP).h1(iT,:) == 0, 1, 'First');  
+        intrusion_lengths(iP, iT) = -sol_longtime(iP).x(idx)*lengthscale;
+        times(iP, iT) = sol_longtime(iP).t(iT);
+
+
+    end
+end
+
+for iP = 1:2
+    plot(times(iP,:), intrusion_lengths(iP,:));
+end
+%set(gca, 'XScale', 'log');
+%     ax(1,iP).XLim = [0, sol(iP).t_end*timescale];
+%     ax(1,iP).XLabel.String = 'time (days)';
+%     ax(1,iP).XLabel.Interpreter = 'none';
+%     ax(1,iP).XLabel.FontName = 'Helvetica';
+%     ax(1,iP).YLabel.String = {'intrusion','length (m)'};
+%     ax(1,iP).YLabel.Interpreter = 'none';
+%     ax(1,iP).YLabel.FontName = 'Helvetica';
+%     %ax(1,iP).YLabel.String = '$x_{\mathrm{int}}$ (m)';
+%     ax(1,iP).FontSize = 14;
+%     ax(1,iP).YLim = 1.1*ax(1,iP).YLim;
+%     ax(1,iP).XScale = 'log';
+%     ax(1,iP).YLim = [0, ylimst(iP)];
+%     ax(1,iP).XLim = [1e-1, 100];
+%     ax(1,iP).YTick = xticks(iP,1:2:end);
+%     ax(1,iP).YTickLabels{1} = '0';
