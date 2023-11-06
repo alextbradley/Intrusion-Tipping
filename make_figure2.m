@@ -27,7 +27,7 @@ colgap = 0.07;%column gap
 rowgap = 0.012;
 width = 0.4;  %subplot width
 startx = (1 - width*ncols - (ncols-1)*colgap)/2 ; %x start pt
-starty = 1 - 0.2;%y start point (leave room for colorbar)
+starty = 1 - 0.3;%y start point (leave room for colorbar)
 height = starty/(nrows+ 1);
 %height = 0.135;
 positions = zeros(4, nrows, ncols);
@@ -38,7 +38,7 @@ for p = 1:nrows
         %make the first row higher and bigger
         if p == 1
             positions(2,p,q) =  positions(2,p,q) +  0.05;
-            positions(4,p,q) =  positions(4,p,q) +  0.03;
+            positions(4,p,q) =  positions(4,p,q) +  0.13;
         end
         %make the final rows low and bigger(?)
         if p == nrows || p == (nrows - 1)
@@ -70,7 +70,7 @@ shg
 tidx = zeros(1,nsnapshots);
 iP = 1;
 tt = sol(iP).t;
-tout = [1,5,10,50,100];
+tout = [1,5,10,50,100]; %output times
 for i = 1:length(tout)
     [~,idx] = min(abs(tt - tout(i)));
     tidx(i) = idx;
@@ -131,7 +131,7 @@ for iP = 1:2
         %add top and interface
         plot(ax(iT+1,iP),-sol(iP).x*lengthscale,sol(iP).h(i, :)*zscale, 'linewidth', 1.75, 'color', C(i,:,iP))
         pl = plot(ax(iT+1,iP),-sol(iP).x*lengthscale,sol(iP).h(i,:)*zscale-sol(iP).h1(i,:)*zscale,'--', 'linewidth', 1.25, 'color', C(i,:,iP));
-        pl.Color = [ C(i,:,iP), 0.25];
+        pl.Color = [ C(i,:,iP), 1];
 
 
         ax(iT+1,iP).YLim = [ylimlo(iT,iP),ylims(iT,iP)];
@@ -152,6 +152,7 @@ end
 
 % compute the intrusion distance
 ylimst = xlims; %use from previous
+ylimst = [120, 2000];
 for iP = 1:2
     for iT = 1:2:length(sol(iP).t)
         %if we're in second case, add first row in low alpha
@@ -185,8 +186,13 @@ for iP = 1:2
     ax(1,iP).YLim = 1.1*ax(1,iP).YLim;
     ax(1,iP).XScale = 'log';
     ax(1,iP).YLim = [0, ylimst(iP)];
-    ax(1,iP).XLim = [1e-1, 100];
+    ax(1,iP).XLim = [1, 300];
     ax(1,iP).YTick = xticks(iP,1:2:end);
+    if iP == 2
+        ax(1,iP).YTick = [0,1000,2000];
+        ax(1,iP).YTickLabel = {'0', '1000', '2000'};
+    end
+
     ax(1,iP).YTickLabels{1} = '0';
 end
 
@@ -277,14 +283,16 @@ end
 fig = figure(2);
 clf;
 c1 = colorbar;
-colormap(c1, C(:,:,1));
+colormap(c1, C([tidx(1):length(sol(iP).t)],:,1));
+
 c1.Label.String = 'time (days)';
 c1.Label.Interpreter = 'none';
 c1.Label.FontName = 'Helvetica';
 c1.FontSize = 14;
 c1.Label.FontSize = 16;
-c1.Ticks = linspace(0, 1, 5);
-c1.TickLabels = {'10^{-2}', '10^{-1}', '10^{0}', '10^{1}', '10^{2}'};
+%c1.Ticks = linspace(0, 1, 5);
+c1.Ticks = [0, 0.43, 0.86]; %hard coded for t = 1,10,100 up to 300, 0.43 = 1/2.3
+c1.TickLabels = {'10^{0}', '10^{1}', '10^{2}'};
 c1.Location = 'north';
 axn = gca;
 axn.Visible = 'off';
@@ -293,47 +301,11 @@ c1.Position(4) = 0.02;
 axnew = axes;
 anxew.Position = axn.Position;
 c2 = colorbar;
-colormap(c2, C(:,:,2));
+colormap(c2, C([tidx(1):length(sol(iP).t)],:,2));
 c2.Ticks = [];
 c2.Location = 'north';
 axnew.Visible = 'off';
 c2.Position(4) = 0.02;
 c2.Position(2) = c1.Position(2)+ 0.02;
 
-%% Make panel i showing the intrusion distance at late time
-data_longtime = load('data-for-figures/figure2_data_longtime.mat');
-sol_longtime = data_longtime.sol;
-figure(3); clf;  hold on;
 
-intrusion_lengths = nan(2, length(sol_longtime(iP).t));
-times = nan(2, length(sol_longtime(iP).t));
-for iP = 1:2
-    for iT = 1:length(sol_longtime(iP).t)
-
-        idx = find(sol_longtime(iP).h(iT,:)-sol_longtime(iP).h1(iT,:) == 0, 1, 'First');  
-        intrusion_lengths(iP, iT) = -sol_longtime(iP).x(idx)*lengthscale;
-        times(iP, iT) = sol_longtime(iP).t(iT);
-
-
-    end
-end
-
-for iP = 1:2
-    plot(times(iP,:), intrusion_lengths(iP,:));
-end
-%set(gca, 'XScale', 'log');
-%     ax(1,iP).XLim = [0, sol(iP).t_end*timescale];
-%     ax(1,iP).XLabel.String = 'time (days)';
-%     ax(1,iP).XLabel.Interpreter = 'none';
-%     ax(1,iP).XLabel.FontName = 'Helvetica';
-%     ax(1,iP).YLabel.String = {'intrusion','length (m)'};
-%     ax(1,iP).YLabel.Interpreter = 'none';
-%     ax(1,iP).YLabel.FontName = 'Helvetica';
-%     %ax(1,iP).YLabel.String = '$x_{\mathrm{int}}$ (m)';
-%     ax(1,iP).FontSize = 14;
-%     ax(1,iP).YLim = 1.1*ax(1,iP).YLim;
-%     ax(1,iP).XScale = 'log';
-%     ax(1,iP).YLim = [0, ylimst(iP)];
-%     ax(1,iP).XLim = [1e-1, 100];
-%     ax(1,iP).YTick = xticks(iP,1:2:end);
-%     ax(1,iP).YTickLabels{1} = '0';

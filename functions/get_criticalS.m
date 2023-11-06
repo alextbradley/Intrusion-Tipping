@@ -27,8 +27,10 @@ while ~(is_ub)
     [x,~] = get_steady_problem_solution(dT, F, C, ub, xeps, xbig);
     if  x(end)  == xbig %we do have cts intrusion, so this is a legit upper bound
         is_ub = 1;
+        fprintf('Found initial upper bound... \n');
+
     else
-        % disp('Initial upper bound guess was not an upper bound, extending search');
+        fprintf('Initial upper bound guess was not an upper bound, extending search \n');
         ub = ub + 1;
     end
     %ub
@@ -41,8 +43,9 @@ while ~(is_lb)
 
     if  x(end)  < xbig %we don't have cts intrusion, so this is a legit lower bound
         is_lb = 1;
+        fprintf('Found initial lower bound... \n')
     else
-        %disp('Initial lower bound guess was not an lower bound, extending search');
+        fprintf('Initial lower bound guess was not an lower bound, extending search \n');
         lb = lb - 1;
     end
     %lb
@@ -51,6 +54,7 @@ end
 %
 % perform the bisection
 %
+disp('proceeding with bisection')
 niter = 1;   %seed 
 while (abs(ub - lb) > tol && (niter < nitermax))
     S_guess = (ub + lb)/2;
@@ -71,6 +75,8 @@ while (abs(ub - lb) > tol && (niter < nitermax))
         lb = S_guess;
     end
     niter = niter + 1;
+
+    fprintf('completed bisection iteration number %.0f. Current error is %.5f \n', niter-1, abs(ub-lb));
 
 end
 Sc = S_guess;

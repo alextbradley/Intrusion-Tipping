@@ -28,17 +28,17 @@ sol(1).pp = pp(1);
 sol(2).pp = pp(2);
 %% Grid and timestepping
 N  	 = 100;     %number of grid points inside each block
-M 	 = 20; 		%number of blocks
+M 	 = 100; 		%number of blocks
 
 %timestepping
 sol(1).dt 	 = 1e-3; %solution timestep
-sol(1).t_end   = 100;    %end time for solution 1
+sol(1).t_end   = 300;    %end time for solution 1
 sol(1).t_plot  = 1000;   %when to plot solution (make larger than t_end to suppress)
 %sol(1).t_store = 0.1;  %when to store solution
 sol(1).idx_out = unique(round(logspace(0,log10(sol(1).t_end /sol(1).dt), 100)));
 
 sol(2).dt 	 = 1e-3; %solution timestep
-sol(2).t_end   = 100;    %end time for solution 2
+sol(2).t_end   = 300;    %end time for solution 2
 sol(2).t_plot  = 1000; %when to plot solution 
 %sol(2).t_store = 0.1;  %when to store solution
 sol(2).idx_out = unique(round(logspace(0,log10(sol(2).t_end /sol(2).dt), 100)));
@@ -50,19 +50,5 @@ sol(2).idx_out = unique(round(logspace(0,log10(sol(2).t_end /sol(2).dt), 100)));
 save('data-for-figures/figure2_data.mat', 'sol');
 toc
 
-%% Get solutions for later T (up to time 1000) for figure 2h
-N  	 = 100;     %number of grid points inside each block
-M 	 = 100; 		%number of blocks (more because longer)
-sol(1).dt      = 1e-3;   
-sol(2).dt      = 1e-3; 
-sol(1).t_end   = 1000;    %end time for solution 1
-sol(2).t_end   = 1000;    %end time for solution 2
-sol(1).idx_out = unique(round(logspace(0,log10(sol(1).t_end /sol(1).dt), 100)));
-sol(2).idx_out = unique(round(logspace(0,log10(sol(2).t_end /sol(2).dt), 100)));
 
-
-[sol(1).x,sol(1).t, sol(1).h, sol(1).h1, sol(1).u1, sol(1).Fr, sol(1).m, sol(1).dhdx,sol(1).dhdt,sol(1).idxmax] = evolve_shape(sol(1).pp.F, sol(1).pp.C, sol(1).pp.S, sol(1).pp.lambda, N, M, sol(1).dt, sol(1).t_end, sol(1).idx_out, sol(1).t_plot);
-[sol(2).x,sol(2).t, sol(2).h, sol(2).h1, sol(2).u1, sol(2).Fr, sol(2).m, sol(2).dhdx,sol(2).dhdt,sol(2).idxmax] = evolve_shape(sol(2).pp.F, sol(2).pp.C, sol(2).pp.S, sol(2).pp.lambda, N, M, sol(2).dt, sol(2).t_end, sol(2).idx_out, sol(2).t_plot);
-
-save('data-for-figures/figure2_data_longtime.mat', 'sol');
 

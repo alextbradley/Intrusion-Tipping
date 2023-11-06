@@ -92,8 +92,6 @@ axnew2.XLabel.Position(2) = -.2;
 axnew2.YLim = [0,3];
 
 
-
-
 for i = 1:4
     ax(i).FontSize = 14;
     ax(i).XLabel.FontSize = 16;
