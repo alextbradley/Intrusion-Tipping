@@ -43,7 +43,8 @@ f = load("data-for-figures/figure4a_data.mat");
 %
 yl = [1e-2, 10]; %plot y lims
 xl = [min(f.S), 5];
-xl = [-7,3];
+xl = [-10,3];
+%xl = [-7,3];
 
 %
 colmap_a = flip(cmocean('speed', length(f.dT)+2));
@@ -84,8 +85,8 @@ c(1).Label.FontSize = 18;
 fill(ax(1),[min(f.S), 0, 0, min(f.S)]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(40,:), 'LineStyle', 'none') 
 fill(ax(1),[0,xl(2), xl(2),0]*1.1, [4.2, 4.2, yl(2), yl(2)],colmap_b(end-20,:), 'LineStyle', 'none') 
 plot(ax(1),[0,0], yl, 'k--', 'linewidth', 1.5)
-txtr = text(ax(1), -6.8, 7, 'prograde', 'interpreter', 'none', 'FontSize', 16, 'color', 'w');
-txtb = text(ax(1), .5, 7, 'retrograde', 'interpreter', 'none', 'FontSize', 16,'color', 'w');
+txtr = text(ax(1), -9.8, 7, 'prograde', 'interpreter', 'none', 'FontSize', 16, 'color', 'w');
+txtb = text(ax(1), 0.2, 7, 'retrograde', 'interpreter', 'none', 'FontSize', 16,'color', 'w');
 
 shg
 
@@ -148,7 +149,9 @@ Fc = f.critical_F;
 cmap = flip(colmap_a);
 for iM = 1:length(Ms)
     plot(ax(2),f.S, Fc(:,dT_idx(iM)), 'color', cmap(iM+1,:), 'LineWidth', 1.25);
+    
 end
+plot(ax(2), [0,0], [0,1], 'k--', 'linewidth', 1.5)
    
 ax(2).XLabel.Interpreter = 'latex';
 ax(2).XLabel.String = '$S$';
@@ -165,8 +168,8 @@ ax(2).YTick = 0:0.2:1;
 % 
 % plot c
 f = load("data-for-figures/figure4c_data.mat");
-%contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
-imagesc(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
+contourf(ax(3), f.S, f.dT, f.critical_F', 100, 'linestyle', 'none');
+%imagesc(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
 %pcolor(ax(3), f.S, f.dT, f.critical_F'); set(ax(3), 'YDir', 'Normal')
 c(3) = colorbar(ax(3));
 c(3).Label.Interpreter = 'latex';
@@ -180,22 +183,24 @@ ax(3).YLabel.Interpreter = 'latex';
 ax(3).YLabel.String = '$M$';
 ax(3).YLabel.FontSize = 18;
 %ax(3).XLabel.Position(2) = ax(2).XLabel.Position(2);
-ax(3).XLim = [xl(1)-0.02, xl(2)]; %make box visibile
-ax(3).YLim = [0.1, 20.1];
+%ax(3).XLim = [xl(1)-0.02, xl(2)]; %make box visibile
+ax(3).XLim = [-9,2]; %make box visibile
+ax(3).YLim = [0.1, 25.1];
 
 colmap_c = cmocean('matter');
-colormap(ax(3), colmap_c(20:end,:));
+colormap(ax(3), colmap_c(70:end,:));
+errbar_colour = 0.9*[1,1,1];
 caxis([0, 0.9])
 plot([0,0], [0.1, 22], 'k--', 'linewidth', 1.5)
 
 %% add a couple of contours corresponding to ice sheets
 levs = [0.3,0.7];
 for i = 1:2
-    contour(ax(3), f.S, f.dT, f.critical_F', [levs(i), levs(i)] , 'linewidth', 1.5, 'linestyle', '--', 'linecolor', 0.75*[1,1,1]);
+    contour(ax(3), f.S, f.dT, f.critical_F', [levs(i), levs(i)] , 'linewidth', 1.5, 'linestyle', '--', 'linecolor', errbar_colour);
 end
 %% add the ice shelf data
 folder  = 'data-for-figures/shelves/';
-shelves              = ["Amery", "Filchner", "Getz", "Larsen", "PIGfast", "PopeSmithKohler", "Ronne", "Ross", "Thwaites"];
+shelves              = ["Amery", "Filchner", "Getz", "Larsen", "PIG", "PopeSmithKohler", "Ronne", "Ross", "Thwaites"];
 names                = ["Amery", "Filchner", "Getz", "Larsen", "PIG", "PSK", "Ronne", "Ross", "Thwaites"];
 horizontal_alignment = ["right", "left", "left","left","left","left","right","right","center"];
 xshift               = [-0.25,-0.5, 0.25, 0.25,0.15, 0.25,-.25, 0.25,0];
@@ -237,9 +242,11 @@ for i = 1:length(shelves)
     slope = slope(~isnan(slope));
     mean_slope(i)= median(slope); 
     std_slope(i) = std(slope);
-    uq_slope(i) = quantile(slope, [0.7]);
-    lq_slope(i) = quantile(slope, [0.3]);
-    
+    uq_slope(i) = quantile(slope, [0.66]);
+    lq_slope(i) = quantile(slope, [0.33]);
+
+    relerr_slope(i) = (uq_slope(i) - lq_slope(i))/abs(mean_slope(i));
+     
 
     %velocity
     velocs = f_shelf.velocs;
@@ -248,8 +255,11 @@ for i = 1:length(shelves)
     mean_velocs(i)= median(velocs);
     invmean_velocs(i) = mean(1./velocs);
     std_velocs(i) = std(velocs);
-    uq_velocs(i) = quantile(velocs, [0.7]);
-    lq_velocs(i) = quantile(velocs, [0.3]);
+    uq_velocs(i) = quantile(velocs, [0.66]);
+    lq_velocs(i) = quantile(velocs, [0.33]);
+
+    relerr_velocs(i) =  ( uq_velocs(i) - lq_velocs(i))/abs(mean_velocs(i));
+
 
     
     %compute all values of S and M
@@ -269,14 +279,17 @@ S     = tan(mean_slope)/Cd;
 S_min = tan(lq_slope)/Cd;
 S_max = tan(uq_slope)/Cd;
 
+ 
 
 %add points
 for i = 1:max(sz)
-    plot(ax(3), S(i), dT(i), 'ko', 'markerfacecolor', 'k',  'markeredgecolor', 'k', 'MarkerSize', 5)
-    plot(ax(3), [S(i),S(i)], [dT_min(i), dT_max(i)], 'k', 'LineWidth', 0.5)
+    plot(ax(3), [S(i),S(i)], [dT_min(i), dT_max(i)], 'LineWidth', 0.5, 'color', errbar_colour)
     
-   plot(ax(3), [S_min(i),S_max(i)], [dT(i), dT(i)], 'k', 'LineWidth', 0.5)
-    t(i) = text(S(i)+ xshift(i), dT(i)+yshift(i), names(i),'FontSize', 16, 'HorizontalAlignment',horizontal_alignment(i));%, 'VerticalAlignment', 'bottom');
+   plot(ax(3), [S_min(i),S_max(i)], [dT(i), dT(i)], 'LineWidth', 0.5, 'color', errbar_colour)
+    t(i) = text(S(i)+ xshift(i), dT(i)+yshift(i), names(i),'FontSize', 14, 'HorizontalAlignment',horizontal_alignment(i), 'color', errbar_colour);%, 'VerticalAlignment', 'bottom');
+
+    plot(ax(3), S(i), dT(i), 'ko', 'markerfacecolor', errbar_colour ,  'markeredgecolor', 'k', 'MarkerSize', 5)
+
    % drawnow
    % pause
 end
@@ -295,3 +308,8 @@ ax(1).XLabel.Position(1) = -2.5;
 ax(3).XLabel.Position(1) = -2.5;
 ax(2).XLabel.Position(1) = -2.5;
 
+
+%% save
+% set(0, 'DefaultFigureRenderer', 'painters');
+% exportgraphics(gcf, 'fig4.eps', 'ContentType', 'Vector')
+% 

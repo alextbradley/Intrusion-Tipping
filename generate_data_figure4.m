@@ -116,7 +116,7 @@ end
 if gendata_partC
     N  = 50;     %number of output points
     S  = -10:0.25:5;
-    dT = 10.^linspace(-1,1.4,N);
+    dT = 10.^linspace(-1,1.6,N);
     C  = 0.1;
 
     nruns = length(dT)*length(S);
