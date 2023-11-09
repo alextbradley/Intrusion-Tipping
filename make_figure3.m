@@ -57,8 +57,6 @@ txt4 = text(0.7, 5.3, '$C = 0.1$', 'Interpreter', 'Latex', 'Rotation', 48, 'Colo
 txt5 = text(0.84, 5.9, '$C = 1$', 'Interpreter', 'Latex', 'Rotation', 55, 'Color', colmap(1,:), 'FontSize', 16);
 
 
-
-
 %
 % tidy things
 %

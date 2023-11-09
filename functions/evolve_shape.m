@@ -122,6 +122,11 @@ for i = 1:n_timesteps+1
         h_now(end)     = h_prev(end) - dt * lambda * (-1/2 *h_prev(end) + 2*h_prev(end-1) - 3/2 *h_prev(end-2))/dx +  dt*melt_now(end); %one sided fd for the final point
        
         t_now = t_now + dt;
+
+        %% break if the intrusion is approaching the end of the domain
+        if idx > 0.9*length(x)
+            break
+        end
 end
 
 

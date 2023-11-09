@@ -150,7 +150,18 @@ end
 %% Intrusion distance evolution
 %
 
-% compute the intrusion distance
+% compute the intrusion distance first
+intrusion_distance = nan(2,length(sol(1).t));
+for iP = 1:2
+    for iT = 1:length(sol(iP).t)
+           idx = find(sol(iP).h(iT,:)-sol(iP).h1(iT,:) == 0, 1, 'First');
+           intrusion_distance(iP,iT) = -sol(iP).x(idx)*lengthscale;
+
+    end
+
+    plot(ax(1,iP), sol(iP).t, squeeze(intrusion_distance(iP,:)), 'k', 'linewidth', 1.25);
+end
+
 ylimst = xlims; %use from previous
 ylimst = [120, 2000];
 for iP = 1:2

@@ -83,7 +83,7 @@ for i = 1:n_timesteps+1
         idx = find(x > min(sol.x), 1,'last'); %x(1:idx) ARE in the solution grid (those points inside the wedge)
         idxmax = max([idxmax, idx]);
         x_solgrid = x(1:idx);        %x values which are in the solution grid
-        h1_now = h_now;         %layer one equal to channel width...
+        h1_now = h_now;              %layer one equal to channel width...
         h1_now(1:idx) = deval(sol, x_solgrid); %...except in salt wedge
        
         %% compute associated quantities
@@ -93,7 +93,9 @@ for i = 1:n_timesteps+1
         %compute the tidal component
         t_now_dimensional = t_now * timescale;
         tidal_timescale_dimensional = 0.5; %tidal timescale in days
-        u1_now    = u1_now + u_tidal*sin(2*pi*t_now_dimensional/tidal_timescale_dimensional);
+        tidal_timescale_dimensional_solar = 28; %tidal timescale in days
+
+        u1_now    = u1_now + u_tidal*sin(2*pi*t_now_dimensional/tidal_timescale_dimensional)*sin(2*pi*t_now_dimensional/tidal_timescale_dimensional_solar);
         u1_now    = abs(u1_now); % bl velocity is positive
 
         %compute the melt
@@ -132,6 +134,11 @@ for i = 1:n_timesteps+1
         h_now(end)     = h_prev(end) - dt * lambda * (-1/2 *h_prev(end) + 2*h_prev(end-1) - 3/2 *h_prev(end-2))/dx +  dt*melt_now(end); %one sided fd for the final point
        
         t_now = t_now + dt;
+
+        %% break if the intrusion is too long
+        if idx > 0.9*length(x)
+            break
+        end
 end
 
 
