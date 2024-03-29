@@ -137,8 +137,8 @@ idx = find(f.u_tidal == 10);
 %
 yl = [0.1, 10];
 xl = [1e-1, 0.901]; %x and y limits of final plot
-bgc = [67,85,90]/100; %background color
-fill(ax(3),[xl, flip(xl)], [yl(1), yl(1), yl(end), yl(end)], bgc , 'FaceAlpha', 0.2)
+% bgc = [67,85,90]/100; %background color
+% fill(ax(3),[xl, flip(xl)], [yl(1), yl(1), yl(end), yl(end)], bgc , 'FaceAlpha', 0.2)
 
 %
 % add map where finite intrusion exists for u_tidal = 10;
@@ -147,29 +147,29 @@ intr = f.intrusion_length;
 intr = squeeze(intr(:,:,idx));
 %p = imagesc(f.F, f.dT, log10(intr));
 %set(p, 'AlphaData',~isnan(intr));
-contourf(f.F, f.dT, log10(intr),100, 'linestyle', 'none');
-set(ax(3), 'YDir', 'normal');
-cc = colorbar(ax(3)); 
-clabels = 10.^(-3:1:1);  
-clabstring  =  ["10^{-3}", "10^{-2}", "10^{-1}", "10^{0}", "10^{1}"];
-caxis(log10(clabels([1 end]))); 
-set(cc,'Ticks',log10(clabels),'TickLabels', clabstring); 
-cmap = cmocean('tempo'); colormap(cmap(20:end,:)); %remove final white shades
+%contourf(f.F, f.dT, log10(intr),100, 'linestyle', 'none');
+%set(ax(3), 'YDir', 'normal');
+%cc = colorbar(ax(3)); 
+%clabels = 10.^(-3:1:1);  
+%clabstring  =  ["10^{-3}", "10^{-2}", "10^{-1}", "10^{0}", "10^{1}"];
+%caxis(log10(clabels([1 end]))); 
+%set(cc,'Ticks',log10(clabels),'TickLabels', clabstring); 
+%cmap = cmocean('tempo'); colormap(cmap(20:end,:)); %remove final white shades
 %cmap = cmocean('ice'); colormap(cmap(50:end-20,:)); %remove final white shades
-cc.Label.String = 'dimensionless intrusion length';
-cc.FontSize = fs;
+%cc.Label.String = 'dimensionless intrusion length';
+%cc.FontSize = fs;
 
 
 %
 % add text labels
 %
-txt1 = text(ax(3),0.11,8.5, 'unbounded intrusion', 'FontSize', fs, 'FontName', 'Helvetica', 'Interpreter', 'none');
-txt2 = text(ax(3), 0.59,0.12, 'bounded intrusion', 'FontSize', fs, 'FontName', 'Helvetica', 'Interpreter', 'none');
+%txt1 = text(ax(3),0.11,8.5, 'unbounded intrusion', 'FontSize', fs, 'FontName', 'Helvetica', 'Interpreter', 'none');
+%txt2 = text(ax(3), 0.59,0.12, 'bounded intrusion', 'FontSize', fs, 'FontName', 'Helvetica', 'Interpreter', 'none');
 
 %
 % add contours of critical intrusion
 %
-colmap= flipud(cmocean('amp', length(u_tidal)+1));
+colmap= (cmocean('haline', length(f.u_tidal)+1));
 for i = 1:length(f.u_tidal)
     intr = f.intrusion_length;
     intr = squeeze(intr(:,:,i));
@@ -178,6 +178,11 @@ for i = 1:length(f.u_tidal)
 
 
 end
+
+% add the figure 2 line
+f = load("data-for-figures/figure3_data.mat");
+plot(f.FF, f.dTc(1,:),  'k--', 'linewidth', 2);
+
 
 %
 % tidy things

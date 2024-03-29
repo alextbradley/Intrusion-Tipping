@@ -41,7 +41,7 @@ f = load("data-for-figures/figure4a_data.mat");
 %
 % fill in the background for pro/retro grade slopes and dividing line
 %
-yl = [1e-2, 10]; %plot y lims
+yl = [1e-2, 12]; %plot y lims
 xl = [min(f.S), 5];
 xl = [-10,3];
 %xl = [-7,3];
@@ -189,6 +189,11 @@ ax(3).YLim = [0.1, 25.1];
 
 colmap_c = cmocean('matter');
 colormap(ax(3), colmap_c(70:end,:));
+
+%colmap_c = gray(256);
+%colormap(ax(3), colmap_c(20:end-20,:));
+
+
 errbar_colour = 0.9*[1,1,1];
 caxis([0, 0.9])
 plot([0,0], [0.1, 22], 'k--', 'linewidth', 1.5)
@@ -205,6 +210,7 @@ names                = ["Amery", "Filchner", "Getz", "Larsen", "PIG", "PSK", "Ro
 horizontal_alignment = ["right", "left", "left","left","left","left","right","right","center"];
 xshift               = [-0.25,-0.5, 0.25, 0.25,0.15, 0.25,-.25, 0.25,0];
 yshift               = [0    ,0.20, 0   ,  0  , 0   ,  0,  0,     0.5,-0.1 ];
+shelf_colours        = linspecer(length(names), 'qualitative');
 
 % constants
 L = 335000; 
@@ -225,7 +231,8 @@ std_velocs = nan(sz);
 
 %alternative method: work out S and M for all points, then take the mean
 clear S_all M_all
-
+uq_val = [0.66];
+lq_val = [0.33];
 %get mean data
 for i = 1:length(shelves)
     fname = strcat(folder, shelves(i), '.mat');
@@ -236,14 +243,16 @@ for i = 1:length(shelves)
     tf_max = tf_max(~isnan(tf_max));
     mean_tf_max(i) = median(tf_max);
     std_tf_max(i)  = std(tf_max);
+    uq_tfmax(i) = quantile(tf_max, uq_val);
+    lq_tfmax(i) = quantile(tf_max, lq_val);
 
     %slope
     slope = f_shelf.slope;
     slope = slope(~isnan(slope));
     mean_slope(i)= median(slope); 
     std_slope(i) = std(slope);
-    uq_slope(i) = quantile(slope, [0.66]);
-    lq_slope(i) = quantile(slope, [0.33]);
+    uq_slope(i) = quantile(slope, uq_val);
+    lq_slope(i) = quantile(slope, lq_val);
 
     relerr_slope(i) = (uq_slope(i) - lq_slope(i))/abs(mean_slope(i));
      
@@ -255,10 +264,11 @@ for i = 1:length(shelves)
     mean_velocs(i)= median(velocs);
     invmean_velocs(i) = mean(1./velocs);
     std_velocs(i) = std(velocs);
-    uq_velocs(i) = quantile(velocs, [0.66]);
-    lq_velocs(i) = quantile(velocs, [0.33]);
+    uq_velocs(i) = quantile(velocs, uq_val);
+    lq_velocs(i) = quantile(velocs, lq_val);
 
-    relerr_velocs(i) =  ( uq_velocs(i) - lq_velocs(i))/abs(mean_velocs(i));
+
+    relerr_velocs(i) =  (uq_velocs(i) - lq_velocs(i))/abs(mean_velocs(i));
 
 
     
@@ -272,8 +282,8 @@ end
 
 % compute dimensionless quantities
 dT     = mean_tf_max / (L/cc)  * St / Cd * uinf ./ mean_velocs * secs_per_year;
-dT_min = mean_tf_max / (L/cc)  * St / Cd * uinf ./ (uq_velocs) * secs_per_year;
-dT_max = mean_tf_max / (L/cc)  * St / Cd * uinf ./ (lq_velocs) * secs_per_year;
+dT_min = lq_tfmax / (L/cc)  * St / Cd * uinf ./ (uq_velocs) * secs_per_year;
+dT_max = uq_tfmax / (L/cc)  * St / Cd * uinf ./ (lq_velocs) * secs_per_year;
 
 S     = tan(mean_slope)/Cd;
 S_min = tan(lq_slope)/Cd;
@@ -283,15 +293,25 @@ S_max = tan(uq_slope)/Cd;
 
 %add points
 for i = 1:max(sz)
-    plot(ax(3), [S(i),S(i)], [dT_min(i), dT_max(i)], 'LineWidth', 0.5, 'color', errbar_colour)
+%    plot(ax(3), [S(i),S(i)], [dT_min(i), dT_max(i)], 'LineWidth', 0.5, 'color', errbar_colour)
     
-   plot(ax(3), [S_min(i),S_max(i)], [dT(i), dT(i)], 'LineWidth', 0.5, 'color', errbar_colour)
-    t(i) = text(S(i)+ xshift(i), dT(i)+yshift(i), names(i),'FontSize', 14, 'HorizontalAlignment',horizontal_alignment(i), 'color', errbar_colour);%, 'VerticalAlignment', 'bottom');
+%   plot(ax(3), [S_min(i),S_max(i)], [dT(i), dT(i)], 'LineWidth', 0.5, 'color', errbar_colour)
 
-    plot(ax(3), S(i), dT(i), 'ko', 'markerfacecolor', errbar_colour ,  'markeredgecolor', 'k', 'MarkerSize', 5)
+    plot(ax(3), S(i), dT(i), 'ko', 'markerfacecolor', shelf_colours(i,:) ,  'markeredgecolor', 'k', 'MarkerSize', 5)
 
+    % add ellipse
+    x1 = S(i); 
+    y1 = dT(i);
+    a = S(i) - S_min(i);
+    b = dT(i) - dT_min(i);
+    xx = linspace(x1 - a , x1 + a);
+    yyl = y1 - b*sqrt(1 - (xx - x1).^2 / a^2);
+    yyu = y1 + b*sqrt(1 - (xx - x1).^2 / a^2);
+    fill([xx,flip(xx)], [yyl, flip(yyu)], shelf_colours(i,:), 'FaceAlpha', 0.3, 'linewidth', 1.5, 'EdgeColor', shelf_colours(i,:))
    % drawnow
    % pause
+       t(i) = text(S(i)+ xshift(i), dT(i)+yshift(i), names(i),'FontSize', 14, 'HorizontalAlignment',horizontal_alignment(i), 'color',  shelf_colours(i,:));%, 'VerticalAlignment', 'bottom');
+
 end
 
 % final tidying

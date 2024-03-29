@@ -97,7 +97,8 @@ for i = 1:n_timesteps+1
 
 %         u1_now    = u1_now + u_tidal*sin(2*pi*t_now_dimensional/tidal_timescale_dimensional)*sin(2*pi*t_now_dimensional/tidal_timescale_dimensional_solar);
 %         u1_now    = abs(u1_now); % bl velocity is positive
-        u1_now = abs(u1_now + 0.4049*u_tidal);
+%        u1_now = abs(u1_now + 0.4049*u_tidal);
+        u1_now = abs(0.4049*u_tidal);
 
         %compute the melt
         phi_now   = h1_now./h_now;

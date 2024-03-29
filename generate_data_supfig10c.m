@@ -18,7 +18,7 @@ dT     = 1./lambda;
 F      = linspace(0.05,0.9,N);     % F values
 C      = 0.1;                    % drag cofficient
 S      = 0;                      % dimensionless slope
-u_tidal= [0, 0.1, 1, 10, 100]; %dimensionless tidal velocity 
+u_tidal= [1, 5, 10,50, 100]; %dimensionless tidal velocity 
 xbig   = 1e5;                    
 xeps   = 1e-4;                   
 
